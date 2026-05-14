@@ -316,6 +316,59 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="ff3PSYxp0LgBj7h3wBEP-1" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" value="Житель" vertex="1">
+          <mxGeometry height="410" width="100" x="460" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="hZExVK30LuAYenskt7N3-8" parent="ff3PSYxp0LgBj7h3wBEP-1" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" value="" vertex="1">
+          <mxGeometry height="50" width="10" x="45" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="ff3PSYxp0LgBj7h3wBEP-5" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" value="NewsMananger" vertex="1">
+          <mxGeometry height="410" width="100" x="200" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="hZExVK30LuAYenskt7N3-11" parent="ff3PSYxp0LgBj7h3wBEP-5" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" value="" vertex="1">
+          <mxGeometry height="50" width="10" x="45" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="ff3PSYxp0LgBj7h3wBEP-9" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" value="Firebase Cloud Messaging" vertex="1">
+          <mxGeometry height="409.75" width="100" x="330" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="hZExVK30LuAYenskt7N3-2" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};" value="Администратор" vertex="1">
+          <mxGeometry height="410" width="100" x="70" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="hZExVK30LuAYenskt7N3-4" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" target="ff3PSYxp0LgBj7h3wBEP-5" value="Создание новости">
+          <mxGeometry relative="1" width="80" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="119.81034482758616" y="120" as="sourcePoint" />
+            <mxPoint x="240" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hZExVK30LuAYenskt7N3-6" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="Создание&lt;div&gt;уведомления о&lt;div&gt;новости&lt;/div&gt;&lt;/div&gt;">
+          <mxGeometry relative="1" width="80" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="250" y="140" as="sourcePoint" />
+            <mxPoint x="380.18965517241384" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hZExVK30LuAYenskt7N3-7" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="Уведомление о&lt;div&gt;новости&lt;/div&gt;">
+          <mxGeometry relative="1" width="80" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="380" y="160" as="sourcePoint" />
+            <mxPoint x="510.18965517241384" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hZExVK30LuAYenskt7N3-9" edge="1" parent="1" source="hZExVK30LuAYenskt7N3-8" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=0;exitY=0;exitDx=0;exitDy=5;exitPerimeter=0;entryX=1;entryY=0;entryDx=0;entryDy=5;entryPerimeter=0;" target="hZExVK30LuAYenskt7N3-11" value="Запрос новости">
+          <mxGeometry relative="1" width="80" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="480" y="180" as="sourcePoint" />
+            <mxPoint x="610.1896551724138" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hZExVK30LuAYenskt7N3-10" edge="1" parent="1" source="hZExVK30LuAYenskt7N3-11" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;exitX=1;exitY=1;exitDx=0;exitDy=-5;exitPerimeter=0;entryX=0;entryY=1;entryDx=0;entryDy=-5;entryPerimeter=0;" target="hZExVK30LuAYenskt7N3-8" value="Возвращение новости">
+          <mxGeometry relative="1" width="80" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="260" y="240" as="sourcePoint" />
+            <mxPoint x="390.18965517241384" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
