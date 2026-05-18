@@ -1,0 +1,205 @@
+@startuml "Диаграмма классов"
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+package "Пользователи и доступ" {
+    class "Пользователь" as User <<entity>> {
+        +id: UUID
+        +fullName: String
+        +login: String
+        +email: String
+        +passwordHash: String
+        +status: UserStatus
+        +createdAt: DateTime
+        +updatedAt: DateTime
+    }
+
+    enum "Статус пользователя" as UserStatus {
+        REGISTERED
+        ACTIVE
+        BLOCKED
+    }
+
+    class "Сессия" as Session <<entity>> {
+        +id: UUID
+        +refreshTokenHash: String
+        +createdAt: DateTime
+        +expiresAt: DateTime
+        +revokedAt: DateTime
+    }
+
+    class "Роль" as Role <<entity>> {
+        +id: UUID
+        +name: RoleName
+        +description: String
+    }
+
+    enum "Название роли" as RoleName {
+        MINIMAL
+        RESIDENT
+        WORKER
+        ADMIN
+    }
+
+    class "Право" as Permission <<entity>> {
+        +id: UUID
+        +code: PermissionCode
+        +description: String
+    }
+
+    enum "Код права" as PermissionCode {
+        VIEW_NEWS
+        CREATE_TICKET
+        VIEW_OWN_TICKETS
+        VIEW_TICKETS_BY_ADDRESS
+        CHANGE_TICKET_STATUS
+        CREATE_NEWS
+        MANAGE_PERMISSIONS
+    }
+
+    class "Выданное право" as UserPermission <<entity>> {
+        +id: UUID
+        +createdAt: DateTime
+        +expiresAt: DateTime
+    }
+
+    class "Адрес" as Address <<entity>> {
+        +id: UUID
+        +building: String
+        +entrance: String
+        +floor: Integer
+        +apartment: String
+        +room: String
+    }
+
+    User --> UserStatus
+    User "1" o-- "0..*" Session : сессии
+    User "*" -- "*" Role : роли
+    Role "*" -- "*" Permission : права роли
+    User "1" o-- "0..*" UserPermission : индивидуальные права
+    UserPermission "*" --> "1" Permission : право
+    UserPermission "*" --> "0..1" Address : область действия
+    User "*" -- "*" Address : привязка к адресу
+}
+
+package "Заявки" {
+    class "Заявка" as Ticket <<entity>> {
+        +id: UUID
+        +title: String
+        +description: String
+        +status: TicketStatus
+        +createdAt: DateTime
+        +updatedAt: DateTime
+        +completedAt: DateTime
+    }
+
+    enum "Статус заявки" as TicketStatus {
+        CREATED
+        IN_PROGRESS
+        DONE
+        CANCELLED
+    }
+
+    class "Оценка заявки" as TicketRating <<entity>> {
+        +id: UUID
+        +value: Integer
+        +comment: String
+        +createdAt: DateTime
+    }
+
+    Ticket --> TicketStatus
+    Ticket "0..*" --> "1" User : создатель / житель
+    Ticket "0..*" --> "0..1" User : исполнитель / рабочий
+    Ticket "0..*" --> "1" Address : адрес заявки
+    Ticket "1" o-- "0..1" TicketRating : оценка
+    TicketRating "0..*" --> "1" User : автор оценки
+}
+
+package "Новости" {
+    class "Новость" as News <<entity>> {
+        +id: UUID
+        +title: String
+        +content: Text
+        +createdAt: DateTime
+        +publishedAt: DateTime
+    }
+
+    News "0..*" --> "1" User : автор / администратор
+}
+
+package "Уведомления" {
+    class "Уведомление" as Notification <<entity>> {
+        +id: UUID
+        +type: NotificationType
+        +message: String
+        +isRead: Boolean
+        +createdAt: DateTime
+    }
+
+    enum "Тип уведомления" as NotificationType {
+        TICKET_CREATED
+        TICKET_STATUS_CHANGED
+        NEWS_CREATED
+    }
+
+    Notification --> NotificationType
+    Notification "0..*" --> "1" User : получатель
+    Notification "0..*" --> "0..1" Ticket : связано с заявкой
+}
+
+package "Сервисы" {
+    class "AuthService" as AuthService <<service>> {
+        +register(data): User
+        +login(login, password): TokenPair
+        +assignRole(userId, roleId): void
+        +grantPermission(userId, permissionId, addressId): void
+    }
+
+    class "SessionService" as SessionService <<service>> {
+        +validateSession(accessToken): UserContext
+        +checkPermission(userId, permission): Boolean
+    }
+
+    class "TicketsService" as TicketsService <<service>> {
+        +createTicket(userId, data): Ticket
+        +getOwnTickets(userId): List<Ticket>
+        +getTicketsForWorker(workerId): List<Ticket>
+        +changeStatus(workerId, ticketId, status): Ticket
+        +rateTicket(userId, ticketId, rating): TicketRating
+    }
+
+    class "NewsService" as NewsService <<service>> {
+        +getNews(): List<News>
+        +createNews(adminId, data): News
+    }
+
+    class "NotificationService" as NotificationService <<service>> {
+        +notifyTicketCreated(ticketId): void
+        +notifyTicketStatusChanged(ticketId): void
+    }
+
+    AuthService ..> User
+    AuthService ..> Session
+    AuthService ..> Role
+    AuthService ..> UserPermission
+
+    SessionService ..> Session
+    SessionService ..> User
+    SessionService ..> Permission
+
+    TicketsService ..> Ticket
+    TicketsService ..> TicketRating
+    TicketsService ..> SessionService
+    TicketsService ..> NotificationService
+
+    NewsService ..> News
+    NewsService ..> AuthService : проверка прав администратора
+
+    NotificationService ..> Notification
+    NotificationService ..> User
+    NotificationService ..> Ticket
+}
+
+@enduml
