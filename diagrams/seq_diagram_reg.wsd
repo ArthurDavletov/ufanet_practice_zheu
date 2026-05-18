@@ -1,4 +1,4 @@
-@startuml
+@startuml "Диаграмма последовательности для регистрации и авторизации"
 actor "Житель" as Resident
 participant "AuthService" as Auth
 actor "Администратор" as Admin

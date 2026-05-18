@@ -1,4 +1,4 @@
-@startuml
+@startuml "Диаграмма последовательности для работы с заявками"
 actor "Житель" as Resident
 participant "TicketsService" as Tickets
 actor "Рабочий" as Worker

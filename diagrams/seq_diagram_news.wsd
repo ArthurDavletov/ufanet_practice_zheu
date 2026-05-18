@@ -1,4 +1,4 @@
-@startuml
+@startuml "Диаграмма последовательности для новостей"
 actor "Житель" as Resident
 actor "Администратор" as Admin
 participant "NewsService" as News
