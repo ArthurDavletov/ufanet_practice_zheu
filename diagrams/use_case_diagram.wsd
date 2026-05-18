@@ -47,7 +47,8 @@ end note
 
 note right of UC_CreateTicket
 Предусловие:
-житель авторизован.
+житель авторизован
+и имеет нужные права.
 end note
 
 note right of UC_GetOwnTickets
