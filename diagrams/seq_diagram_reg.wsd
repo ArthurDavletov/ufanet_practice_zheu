@@ -1,0 +1,36 @@
+@startuml
+actor "Житель" as Resident
+participant "AuthService" as Auth
+actor "Администратор" as Admin
+
+== Регистрация ==
+
+Resident -> Auth : Заполнить данные регистрации
+activate Auth
+
+Auth -> Auth : Создать учетную запись\nс минимальными правами
+
+Auth --> Resident : Сообщение об успешной регистрации
+deactivate Auth
+
+== Авторизация ==
+
+Resident -> Auth : Передать логин и пароль
+activate Auth
+
+Auth -> Auth : Проверить учетные данные
+
+Auth --> Resident : JWT access token\nи refresh token
+deactivate Auth
+
+== Расширение прав в будущем ==
+
+Admin -> Auth : Назначить права пользователю\nнапример, доступ к заявкам по адресу
+activate Auth
+
+Auth -> Auth : Обновить роли и права пользователя
+
+Auth --> Admin : Права назначены
+deactivate Auth
+
+@enduml

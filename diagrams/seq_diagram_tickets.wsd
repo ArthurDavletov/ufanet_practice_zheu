@@ -1,0 +1,88 @@
+@startuml
+actor "Житель" as Resident
+participant "TicketsService" as Tickets
+actor "Рабочий" as Worker
+participant "SessionService" as Session
+participant "NotificationService" as Notify
+
+== Создание заявки ==
+
+Resident -> Tickets : Создать заявку
+activate Tickets
+
+Tickets -> Session : Проверить сессию
+activate Session
+Session --> Tickets : Сессия валидна
+deactivate Session
+
+Tickets -> Tickets : Внести заявку в список
+Tickets --> Resident : Уведомление о создании заявки
+
+deactivate Tickets
+
+== Получение заявок рабочим ==
+
+Worker -> Tickets : Получить заявки
+activate Tickets
+
+Tickets -> Session : Проверить сессию\nи права рабочего
+activate Session
+Session --> Tickets : Сессия валидна,\nправа подтверждены
+deactivate Session
+
+Tickets --> Worker : Список заявок
+
+deactivate Tickets
+
+== Получение своих заявок жителем ==
+
+Resident -> Tickets : Получить свои заявки
+activate Tickets
+
+Tickets -> Session : Проверить сессию
+activate Session
+Session --> Tickets : Сессия валидна
+deactivate Session
+
+Tickets -> Tickets : Найти заявки по id_жителя
+Tickets --> Resident : Список своих заявок\nсо статусами
+
+deactivate Tickets
+
+== Изменение статуса заявки ==
+
+Worker -> Tickets : Изменить статус заявки
+activate Tickets
+
+Tickets -> Session : Проверить сессию\nи права рабочего
+activate Session
+Session --> Tickets : Сессия валидна,\nправа подтверждены
+deactivate Session
+
+Tickets -> Tickets : Изменить статус заявки
+
+Tickets -> Notify : Отправить уведомление\nо смене статуса
+activate Notify
+Notify --> Resident : Уведомление о смене статуса
+deactivate Notify
+
+Tickets --> Worker : Статус заявки изменен
+
+deactivate Tickets
+
+== Оценивание выполненной работы ==
+
+Resident -> Tickets : Оценить выполненную работу
+activate Tickets
+
+Tickets -> Session : Проверить сессию
+activate Session
+Session --> Tickets : Сессия валидна
+deactivate Session
+
+Tickets -> Tickets : Сохранить оценку заявки
+Tickets --> Resident : Сообщение об изменении оценки
+
+deactivate Tickets
+
+@enduml

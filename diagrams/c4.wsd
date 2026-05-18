@@ -1,0 +1,45 @@
+@startuml C4_Container
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+Person(resident, "Житель", "Создает заявки, получает свои заявки со статусами, смотрит новости")
+Person(worker, "Рабочий", "Просматривает заявки и меняет их статус")
+Person(admin, "Администратор", "Создает новости и в будущем назначает права пользователям")
+
+System_Boundary(system, "Система") {
+    Container(ui, "Web / Mobile UI", "Frontend", "Интерфейс для жителей, рабочих и администратора")
+
+    Container(auth, "AuthService", "Backend service", "Регистрация, авторизация, выдача JWT, роли и права")
+    Container(session, "SessionService", "Backend service", "Проверка сессий и токенов для защищенных операций")
+    Container(tickets, "TicketsService", "Backend service", "Создание, получение и изменение заявок")
+    Container(news, "NewsService", "Backend service", "Создание и просмотр новостей")
+    Container(notification, "NotificationService", "Backend service", "Формирование и отправка уведомлений")
+
+    ContainerDb(db, "Database", "DBMS", "Пользователи, роли, заявки, новости, уведомления")
+}
+
+System_Ext(messageGateway, "Email / Push Gateway", "Внешний сервис отправки сообщений")
+
+Rel(resident, ui, "Работает с заявками, смотрит новости, авторизуется")
+Rel(worker, ui, "Просматривает заявки и меняет статусы")
+Rel(admin, ui, "Создает новости и назначает права")
+
+Rel(ui, auth, "Регистрация и авторизация", "HTTPS / JSON")
+Rel(ui, tickets, "Создание и получение заявок", "HTTPS / JSON")
+Rel(ui, news, "Просмотр и создание новостей", "HTTPS / JSON")
+
+Rel(tickets, session, "Проверяет сессию и права")
+Rel(news, session, "Проверяет сессию и права администратора")
+Rel(session, auth, "Проверяет токен и права пользователя")
+
+Rel(auth, db, "Читает и изменяет пользователей, роли и права")
+Rel(session, db, "Читает данные сессий / токенов")
+Rel(tickets, db, "Читает и изменяет заявки")
+Rel(news, db, "Читает и изменяет новости")
+Rel(notification, db, "Сохраняет уведомления")
+
+Rel(tickets, notification, "Передает событие об изменении статуса")
+Rel(notification, messageGateway, "Отправляет уведомления", "Email / Push")
+
+@enduml
