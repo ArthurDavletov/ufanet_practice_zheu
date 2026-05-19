@@ -3,6 +3,7 @@ actor "Житель" as Resident
 actor "Администратор" as Admin
 participant "NewsService" as News
 participant "AuthService" as Auth
+participant "NotificationService" as Notify
 
 == Просмотр новостей ==
 
@@ -25,8 +26,12 @@ deactivate Auth
 
 News -> News : Сохранить новость
 
-News --> Admin : Новость создана
+News -> Notify : Отправить уведомление\nо новой новости
+activate Notify
+Notify --> Resident : Уведомление о новой новости
+deactivate Notify
 
+News --> Admin : Новость создана
 deactivate News
 
 @enduml
