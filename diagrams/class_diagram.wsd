@@ -115,6 +115,11 @@ package "Заявки" {
     Ticket "0..*" --> "1" Address : адрес заявки
     Ticket "1" o-- "0..1" TicketRating : оценка
     TicketRating "0..*" --> "1" User : автор оценки
+
+    note bottom of TicketRating
+    Оценивать можно только свою заявку
+    после перехода заявки в статус DONE.
+    end note
 }
 
 package "Новости" {
