@@ -19,7 +19,7 @@ System_Boundary(system, "Система") {
     ContainerDb(db, "Database", "DBMS", "Пользователи, роли, заявки, новости, уведомления")
 }
 
-System_Ext(messageGateway, "Email / Push Gateway", "Внешний сервис отправки сообщений")
+System_Ext(messageGateway, "Firebase Cloud Messaging (FCM)", "Внешний сервис отправки сообщений")
 
 Rel(resident, ui, "Работает с заявками, смотрит новости, авторизуется")
 Rel(worker, ui, "Просматривает заявки и меняет статусы")
@@ -40,6 +40,6 @@ Rel(news, db, "Читает и изменяет новости")
 Rel(notification, db, "Сохраняет уведомления")
 
 Rel(tickets, notification, "Передает событие об изменении статуса")
-Rel(notification, messageGateway, "Отправляет уведомления", "Email / Push")
+Rel(notification, messageGateway, "Отправляет уведомления", "FCM")
 
 @enduml
