@@ -40,9 +40,8 @@ Admin --> UC_CreateNews
 Admin --> UC_AssignRights
 
 note right of UC_Register
-Регистрация выполняется автоматически.
-Пользователь получает минимальный набор прав.
-Администратор не подтверждает регистрацию вручную.
+Регистрация автоматическая.
+С мин. набором прав.
 end note
 
 note right of UC_CreateTicket
@@ -53,7 +52,7 @@ end note
 
 note right of UC_GetOwnTickets
 Житель получает список своих заявок,
-а статус находится внутри данных заявки.
+со статусами внутри.
 end note
 
 note right of UC_ViewTickets
@@ -66,12 +65,6 @@ note right of UC_ChangeTicketStatus
 Предусловие:
 рабочий авторизован
 и имеет нужные права.
-end note
-
-note right of UC_AssignRights
-В будущем администратор может
-назначать дополнительные права,
-например просмотр заявок по адресу.
 end note
 
 @enduml
