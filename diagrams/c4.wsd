@@ -1,8 +1,6 @@
 @startuml C4_Container
 !includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-LAYOUT_WITH_LEGEND()
-
 Person(resident, "Житель", "Создает заявки, получает свои заявки со статусами, смотрит новости")
 Person(worker, "Рабочий", "Просматривает заявки и меняет их статус")
 Person(admin, "Администратор", "Создает новости и в будущем назначает права пользователям")
