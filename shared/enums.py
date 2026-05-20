@@ -1,0 +1,37 @@
+import enum
+
+
+class UserStatus(str, enum.Enum):
+    REGISTERED = "REGISTERED"
+    ACTIVE = "ACTIVE"
+    BLOCKED = "BLOCKED"
+
+
+class RoleName(str, enum.Enum):
+    MINIMAL = "MINIMAL"
+    RESIDENT = "RESIDENT"
+    WORKER = "WORKER"
+    ADMIN = "ADMIN"
+
+
+class PermissionCode(str, enum.Enum):
+    VIEW_NEWS = "VIEW_NEWS"
+    CREATE_TICKET = "CREATE_TICKET"
+    VIEW_OWN_TICKETS = "VIEW_OWN_TICKETS"
+    VIEW_TICKETS_BY_ADDRESS = "VIEW_TICKETS_BY_ADDRESS"
+    CHANGE_TICKET_STATUS = "CHANGE_TICKET_STATUS"
+    CREATE_NEWS = "CREATE_NEWS"
+    MANAGE_PERMISSIONS = "MANAGE_PERMISSIONS"
+
+
+class TicketStatus(str, enum.Enum):
+    CREATED = "CREATED"
+    IN_PROGRESS = "IN_PROGRESS"
+    DONE = "DONE"
+    CANCELLED = "CANCELLED"
+
+
+class NotificationType(str, enum.Enum):
+    TICKET_CREATED = "TICKET_CREATED"
+    TICKET_STATUS_CHANGED = "TICKET_STATUS_CHANGED"
+    NEWS_CREATED = "NEWS_CREATED"
