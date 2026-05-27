@@ -7,20 +7,31 @@ actor "Рабочий" as Worker
 actor "Администратор" as Admin
 
 rectangle "Система" {
-    usecase "Зарегистрироваться" as UC_Register
-    usecase "Авторизоваться" as UC_Login
+    rectangle "Регистрация и доступ" {
+        usecase "Зарегистрироваться" as UC_Register
+        usecase "Авторизоваться" as UC_Login
+    }
 
-    usecase "Смотреть новости" as UC_ViewNews
-    usecase "Создавать заявки" as UC_CreateTicket
-    usecase "Получать свои заявки\nсо статусами" as UC_GetOwnTickets
-    usecase "Оценивать\nвыполненную работу" as UC_RateWork
-    usecase "Получать уведомления" as UC_GetNotifications
+    rectangle "Новости и оповещения" {
+        usecase "Смотреть новости" as UC_ViewNews
+        usecase "Получать уведомления" as UC_GetNotifications
+    }
 
-    usecase "Просматривать заявки" as UC_ViewTickets
-    usecase "Менять статус заявки" as UC_ChangeTicketStatus
+    rectangle "Заявки жителя" {
+        usecase "Создавать заявки" as UC_CreateTicket
+        usecase "Получать свои заявки\nсо статусами" as UC_GetOwnTickets
+        usecase "Оценивать\nвыполненную работу" as UC_RateWork
+    }
 
-    usecase "Создавать новости" as UC_CreateNews
-    usecase "Назначать права\nпользователям" as UC_AssignRights
+    rectangle "Обработка заявок" {
+        usecase "Просматривать заявки" as UC_ViewTickets
+        usecase "Менять статус заявки" as UC_ChangeTicketStatus
+    }
+
+    rectangle "Администрирование" {
+        usecase "Создавать новости" as UC_CreateNews
+        usecase "Назначать права\nпользователям" as UC_AssignRights
+    }
 }
 
 Resident --> UC_Register
