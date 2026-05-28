@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY shared ./shared
 COPY services ./services
+COPY frontend ./frontend
 COPY alembic ./alembic
 COPY alembic.ini .
 COPY scripts ./scripts

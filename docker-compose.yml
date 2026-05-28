@@ -104,5 +104,20 @@ services:
       session:
         condition: service_started
 
+  frontend:
+    build: .
+    command: python -m http.server 8080 --directory frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      auth:
+        condition: service_started
+      tickets:
+        condition: service_started
+      news:
+        condition: service_started
+      notifications:
+        condition: service_started
+
 volumes:
   pgdata:
