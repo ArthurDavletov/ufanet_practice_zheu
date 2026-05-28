@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ЖЭУ</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>ЖЭУ</h1>
+        <p id="userSummary">Войдите в систему</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="refreshBtn" class="secondary" type="button">Обновить</button>
+        <button id="logoutBtn" class="secondary" type="button" hidden>Выйти</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section id="authView" class="auth-grid">
+        <form id="loginForm" class="panel">
+          <h2>Вход</h2>
+          <label>
+            Логин
+            <input name="login" autocomplete="username" value="resident" required />
+          </label>
+          <label>
+            Пароль
+            <input name="password" type="password" autocomplete="current-password" value="resident123" required />
+          </label>
+          <button type="submit">Войти</button>
+          <div class="quick-logins">
+            <button data-login="resident" data-password="resident123" type="button">Житель</button>
+            <button data-login="worker" data-password="worker123" type="button">Рабочий</button>
+            <button data-login="admin" data-password="admin123" type="button">Админ</button>
+          </div>
+        </form>
+
+        <form id="registerForm" class="panel">
+          <h2>Регистрация</h2>
+          <label>
+            ФИО
+            <input name="full_name" autocomplete="name" required />
+          </label>
+          <label>
+            Логин
+            <input name="login" autocomplete="username" required />
+          </label>
+          <label>
+            Email
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+          <label>
+            Пароль
+            <input name="password" type="password" autocomplete="new-password" minlength="6" required />
+          </label>
+          <button type="submit">Зарегистрироваться</button>
+        </form>
+      </section>
+
+      <section id="appView" hidden>
+        <nav id="sectionTabs" class="tabs" aria-label="Разделы"></nav>
+
+        <section id="newsSection" class="workspace" hidden>
+          <div class="section-head">
+            <h2>Новости</h2>
+          </div>
+          <div id="newsList" class="list"></div>
+        </section>
+
+        <section id="residentSection" class="workspace" hidden>
+          <div class="section-head">
+            <h2>Житель</h2>
+          </div>
+          <div class="workspace-grid">
+            <form id="ticketForm" class="panel">
+              <h3>Новая заявка</h3>
+              <label>
+                Тема
+                <input name="title" required minlength="3" />
+              </label>
+              <label>
+                Категория
+                <select name="category">
+                  <option value="plumber">Сантехник</option>
+                  <option value="electrician">Электрик</option>
+                </select>
+              </label>
+              <label>
+                Адрес
+                <select name="address_id" id="ticketAddress" required></select>
+              </label>
+              <label>
+                Описание
+                <textarea name="description" rows="4" required minlength="5"></textarea>
+              </label>
+              <button type="submit">Создать заявку</button>
+            </form>
+
+            <div class="panel">
+              <div class="section-head compact">
+                <h3>Мои заявки</h3>
+              </div>
+              <div id="myTicketsList" class="list"></div>
+            </div>
+
+            <div class="panel">
+              <div class="section-head compact">
+                <h3>Уведомления</h3>
+                <button id="readAllBtn" class="secondary" type="button">Прочитано</button>
+              </div>
+              <div id="notificationsList" class="list"></div>
+            </div>
+
+            <div class="panel">
+              <h3>Настройки</h3>
+              <label class="check-row">
+                <input id="browserNotificationsEnabled" type="checkbox" />
+                Браузерные уведомления
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section id="workerSection" class="workspace" hidden>
+          <div class="section-head">
+            <h2>Рабочий</h2>
+            <label class="filter-control">
+              Статус
+              <select id="workerStatusFilter">
+                <option value="CREATED" selected>Новые</option>
+                <option value="IN_PROGRESS">В работе</option>
+                <option value="DONE">Выполненные</option>
+                <option value="CANCELLED">Отмененные</option>
+                <option value="ALL">Все</option>
+              </select>
+            </label>
+          </div>
+          <div id="workerTicketsList" class="list"></div>
+        </section>
+
+        <section id="adminSection" class="workspace" hidden>
+          <div class="section-head">
+            <h2>Администратор</h2>
+          </div>
+          <div class="workspace-grid">
+            <form id="newsForm" class="panel">
+              <h3>Новая новость</h3>
+              <label>
+                Заголовок
+                <input name="title" required minlength="3" />
+              </label>
+              <label>
+                Текст
+                <textarea name="content" rows="4" required minlength="5"></textarea>
+              </label>
+              <button type="submit">Опубликовать</button>
+            </form>
+
+            <form id="addressForm" class="panel">
+              <h3>Новый адрес</h3>
+              <label>
+                Дом
+                <input name="building" required />
+              </label>
+              <label>
+                Подъезд
+                <input name="entrance" />
+              </label>
+              <label>
+                Этаж
+                <input name="floor" type="number" min="1" />
+              </label>
+              <label>
+                Квартира
+                <input name="apartment" required />
+              </label>
+              <label>
+                Помещение
+                <input name="room" />
+              </label>
+              <button type="submit">Добавить адрес</button>
+            </form>
+
+            <div class="panel wide">
+              <h3>Пользователи</h3>
+              <div id="usersList" class="list"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <div id="statusLine" class="status" role="status" aria-live="polite"></div>
+    </main>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
