@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 
+from shared.cors import setup_cors
 from shared.database import get_db
 from shared.enums import PermissionCode
 from shared.models import Role, User, UserPermission
@@ -11,6 +12,7 @@ from shared.schemas import CheckPermissionRequest, UserContext, ValidateSessionR
 from shared.security import decode_access_token
 
 app = FastAPI(title="SessionService", version="1.0.0")
+setup_cors(app)
 
 
 @app.get("/health")

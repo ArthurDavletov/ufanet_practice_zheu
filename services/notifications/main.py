@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi import Depends, FastAPI, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
+from shared.cors import setup_cors
 from shared.database import get_db
 from shared.enums import NotificationType
 from shared.models import Notification
@@ -10,6 +11,7 @@ from shared.schemas import InternalNotifyRequest, MessageResponse, NotificationR
 from shared.session_client import SessionClient, require_auth
 
 app = FastAPI(title="NotificationService", version="1.0.0")
+setup_cors(app)
 session_client = SessionClient()
 
 

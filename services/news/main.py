@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi import Depends, FastAPI, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
+from shared.cors import setup_cors
 from shared.database import get_db
 from shared.enums import NotificationType, PermissionCode
 from shared.enums import RoleName
@@ -11,6 +12,7 @@ from shared.schemas import NewsCreate, NewsResponse
 from shared.session_client import SessionClient, notify_client_post, require_auth, require_permission
 
 app = FastAPI(title="NewsService", version="1.0.0")
+setup_cors(app)
 session_client = SessionClient()
 
 
