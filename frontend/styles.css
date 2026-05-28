@@ -79,6 +79,10 @@ textarea {
   resize: vertical;
 }
 
+select[multiple] {
+  min-height: 108px;
+}
+
 input:focus,
 select:focus,
 textarea:focus,

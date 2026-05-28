@@ -75,6 +75,7 @@ const els = {
   notificationsList: document.querySelector("#notificationsList"),
   browserNotificationsEnabled: document.querySelector("#browserNotificationsEnabled"),
   usersList: document.querySelector("#usersList"),
+  registerAddresses: document.querySelector("#registerAddresses"),
   ticketAddress: document.querySelector("#ticketAddress"),
 };
 
@@ -87,7 +88,9 @@ document.querySelector("#loginForm").addEventListener("submit", async (event) =>
 document.querySelector("#registerForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   const form = event.currentTarget;
-  const data = Object.fromEntries(new FormData(form));
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  data.address_ids = formData.getAll("address_ids").filter(Boolean);
   await runAction(async () => {
     await request("auth", "/register", { method: "POST", body: data });
     await login(data.login, data.password);
@@ -249,6 +252,12 @@ els.refreshBtn.addEventListener("click", async () => {
 await init();
 
 async function init() {
+  try {
+    await loadAddresses();
+  } catch (error) {
+    setStatus(error.message, "error");
+  }
+
   if (state.tokens?.access_token) {
     try {
       state.context = await validateSession();
@@ -290,9 +299,7 @@ async function refreshData() {
     request("news", "/news").then((items) => {
       state.news = items;
     }),
-    request("auth", "/addresses").then((items) => {
-      state.addresses = items;
-    }),
+    loadAddresses(),
   ];
 
   if (permissions.has("VIEW_OWN_TICKETS")) {
@@ -363,10 +370,14 @@ async function request(service, path, options = {}) {
   }
 
   if (!response.ok) {
-    throw new Error(payload?.detail || `Ошибка ${response.status}`);
+    throw new Error(formatApiError(payload, response.status));
   }
 
   return payload;
+}
+
+async function loadAddresses() {
+  state.addresses = await request("auth", "/addresses");
 }
 
 async function runAction(action, successMessage) {
@@ -388,6 +399,7 @@ function render() {
   els.authView.hidden = isLoggedIn;
   els.appView.hidden = !isLoggedIn;
   els.logoutBtn.hidden = !isLoggedIn;
+  renderRegisterAddresses();
 
   if (!isLoggedIn) {
     els.userSummary.textContent = "Войдите в систему";
@@ -447,11 +459,21 @@ function renderNews() {
     : emptyTemplate("Новостей нет");
 }
 
-function renderAddresses() {
-  els.ticketAddress.innerHTML = state.addresses.length
+function renderRegisterAddresses() {
+  if (!els.registerAddresses) return;
+
+  els.registerAddresses.innerHTML = state.addresses.length
     ? state.addresses.map((address) => `<option value="${address.id}">${escapeHtml(addressLabel(address))}</option>`).join("")
+    : `<option value="" disabled>Адресов нет</option>`;
+  els.registerAddresses.disabled = state.addresses.length === 0;
+}
+
+function renderAddresses() {
+  const addresses = residentAddresses();
+  els.ticketAddress.innerHTML = addresses.length
+    ? addresses.map((address) => `<option value="${address.id}">${escapeHtml(addressLabel(address))}</option>`).join("")
     : `<option value="" disabled selected>Адресов нет</option>`;
-  els.ticketAddress.disabled = state.addresses.length === 0;
+  els.ticketAddress.disabled = addresses.length === 0;
 }
 
 function renderResident() {
@@ -747,6 +769,12 @@ function statusBadge(status) {
   return `<span class="badge ${status}">${escapeHtml(STATUS_LABELS[status] || status)}</span>`;
 }
 
+function residentAddresses() {
+  if (!Array.isArray(state.context?.address_ids)) return state.addresses;
+  const linkedAddressIds = new Set(state.context.address_ids);
+  return state.addresses.filter((address) => linkedAddressIds.has(address.id));
+}
+
 function addressById(id) {
   const address = state.addresses.find((item) => item.id === id);
   return address ? addressLabel(address) : "адрес не найден";
@@ -770,6 +798,65 @@ function formatDate(value) {
 
 function dropEmpty(data) {
   return Object.fromEntries(Object.entries(data).filter(([, value]) => value !== ""));
+}
+
+function formatApiError(payload, status) {
+  const detail = payload?.detail;
+  if (Array.isArray(detail)) {
+    return detail.map(formatValidationIssue).join("; ");
+  }
+  if (typeof detail === "string" && detail.trim()) {
+    return detail;
+  }
+  if (detail && typeof detail === "object") {
+    return JSON.stringify(detail);
+  }
+  return `Ошибка ${status}`;
+}
+
+function formatValidationIssue(issue) {
+  if (typeof issue === "string") return issue;
+  if (!issue || typeof issue !== "object") return "Ошибка валидации";
+
+  const field = validationFieldLabel(issue.loc);
+  const message = validationMessage(issue);
+  return field ? `${field}: ${message}` : message;
+}
+
+function validationFieldLabel(loc) {
+  const labels = {
+    full_name: "ФИО",
+    login: "Логин",
+    email: "Email",
+    password: "Пароль",
+    address_ids: "Адреса",
+    title: "Тема",
+    description: "Описание",
+    category: "Категория",
+    address_id: "Адрес",
+  };
+  const parts = Array.isArray(loc) ? loc.filter((part) => part !== "body" && typeof part !== "number") : [];
+  const key = parts.find((part) => labels[part]) || parts.at(-1);
+  return labels[key] || key || "";
+}
+
+function validationMessage(issue) {
+  const minLength = issue.ctx?.min_length;
+  const maxLength = issue.ctx?.max_length;
+
+  if (issue.type === "string_too_short" && minLength) {
+    return `минимум ${minLength} символа`;
+  }
+  if (issue.type === "string_too_long" && maxLength) {
+    return `максимум ${maxLength} символов`;
+  }
+  if (issue.type === "missing") {
+    return "обязательное поле";
+  }
+  if (issue.type === "value_error") {
+    return "некорректное значение";
+  }
+  return issue.msg || "ошибка валидации";
 }
 
 function escapeHtml(value) {
