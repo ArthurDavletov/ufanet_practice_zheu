@@ -41,14 +41,14 @@ def main() -> None:
             "admin@zheu.local",
             "Администратор УК",
             "admin123",
-            [admin_role, minimal_role],
+            [minimal_role, admin_role],
         )
         worker = upsert_user(
             "worker",
             "worker@zheu.local",
             "Сантехник Иванов",
             "worker123",
-            [worker_role],
+            [minimal_role, worker_role],
         )
         resident = upsert_user(
             "resident",

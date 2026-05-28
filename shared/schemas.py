@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
 
-from shared.enums import NotificationType, PermissionCode, RoleName, TicketStatus
+from shared.enums import NotificationType, PermissionCode, RoleName, TicketStatus, UserStatus
 
 
 class UserContext(BaseModel):
@@ -44,6 +44,16 @@ class GrantPermissionRequest(BaseModel):
     user_id: UUID
     permission_code: PermissionCode
     address_id: UUID | None = None
+
+
+class UserResponse(BaseModel):
+    id: UUID
+    full_name: str
+    login: str
+    email: str
+    status: UserStatus
+    roles: list[str]
+    permissions: list[str]
 
 
 class ValidateSessionRequest(BaseModel):

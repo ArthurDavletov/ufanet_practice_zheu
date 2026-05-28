@@ -5,6 +5,7 @@ from fastapi import Depends, FastAPI, HTTPException, Header, status
 from sqlalchemy.orm import Session, joinedload
 
 from shared.database import get_db
+from shared.cors import setup_cors
 from shared.enums import PermissionCode, RoleName, UserStatus
 from shared.models import Address, Permission, Role, User, UserPermission
 from shared.permissions import (
@@ -23,6 +24,7 @@ from shared.schemas import (
     RefreshRequest,
     RegisterRequest,
     TokenPair,
+    UserResponse,
 )
 from shared.security import (
     create_access_token,
@@ -36,6 +38,10 @@ from shared.models import Session as UserSession
 from shared.config import get_settings
 
 app = FastAPI(title="AuthService", version="1.0.0")
+setup_cors(app)
+
+
+BUSINESS_ROLES = {RoleName.RESIDENT, RoleName.WORKER, RoleName.ADMIN}
 
 
 @app.on_event("startup")
@@ -59,7 +65,6 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)) -> MessageRes
 
     minimal_role = db.query(Role).filter(Role.name == RoleName.MINIMAL).one()
     resident_role = db.query(Role).filter(Role.name == RoleName.RESIDENT).one()
-
     user = User(
         full_name=data.full_name,
         login=data.login,
@@ -71,6 +76,33 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)) -> MessageRes
     db.add(user)
     db.commit()
     return MessageResponse(message="ok")
+
+
+@app.get("/users", response_model=list[UserResponse])
+def list_users(
+    db: Session = Depends(get_db),
+    authorization: str | None = Header(default=None),
+) -> list[UserResponse]:
+    _admin_from_token(authorization, db)
+    users = (
+        db.query(User)
+        .options(joinedload(User.roles).joinedload(Role.permissions))
+        .options(joinedload(User.permissions).joinedload(UserPermission.permission))
+        .order_by(User.login)
+        .all()
+    )
+    return [
+        UserResponse(
+            id=user.id,
+            full_name=user.full_name,
+            login=user.login,
+            email=user.email,
+            status=user.status,
+            roles=collect_user_roles(user),
+            permissions=collect_user_permissions(db, user),
+        )
+        for user in users
+    ]
 
 
 @app.post("/login", response_model=TokenPair)
@@ -174,11 +206,22 @@ def assign_role(
     _admin_from_token(authorization, db)
     user = db.query(User).options(joinedload(User.roles)).filter(User.id == data.user_id).first()
     role = db.query(Role).filter(Role.name == data.role_name).first()
-    if user is None or role is None:
+    minimal_role = db.query(Role).filter(Role.name == RoleName.MINIMAL).first()
+    if user is None or role is None or minimal_role is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User or role not found")
-    if role not in user.roles:
-        user.roles.append(role)
-        db.commit()
+
+    if data.role_name == RoleName.MINIMAL:
+        user.roles = [minimal_role]
+    elif data.role_name in BUSINESS_ROLES:
+        user.roles = [minimal_role, role]
+    else:
+        user.roles = [r for r in user.roles if r.name not in BUSINESS_ROLES]
+        if minimal_role not in user.roles:
+            user.roles.append(minimal_role)
+        if role not in user.roles:
+            user.roles.append(role)
+
+    db.commit()
     return MessageResponse(message="ok")
 
 
