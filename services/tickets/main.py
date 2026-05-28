@@ -77,6 +77,8 @@ def create_ticket(
     address = db.query(Address).filter(Address.id == data.address_id).first()
     if address is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
+    if data.address_id not in ctx.address_ids:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Address is not linked to user")
 
     ticket = Ticket(
         title=data.title,

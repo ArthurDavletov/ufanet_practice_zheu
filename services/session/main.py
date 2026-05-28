@@ -25,6 +25,7 @@ def _load_user(db: Session, user_id: UUID) -> User | None:
         db.query(User)
         .options(joinedload(User.roles).joinedload(Role.permissions))
         .options(joinedload(User.permissions).joinedload(UserPermission.permission))
+        .options(joinedload(User.addresses))
         .filter(User.id == user_id)
         .first()
     )
@@ -45,6 +46,7 @@ def validate_session(data: ValidateSessionRequest, db: Session = Depends(get_db)
         login=user.login,
         roles=collect_user_roles(user),
         permissions=collect_user_permissions(db, user),
+        address_ids=[address.id for address in user.addresses],
     )
 
 

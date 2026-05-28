@@ -11,6 +11,7 @@ class UserContext(BaseModel):
     login: str
     roles: list[str]
     permissions: list[str]
+    address_ids: list[UUID] = Field(default_factory=list)
 
 
 class TokenPair(BaseModel):
@@ -24,6 +25,7 @@ class RegisterRequest(BaseModel):
     login: str = Field(min_length=3, max_length=64)
     email: EmailStr
     password: str = Field(min_length=6, max_length=128)
+    address_ids: list[UUID] = Field(default_factory=list)
 
 
 class LoginRequest(BaseModel):
@@ -54,6 +56,7 @@ class UserResponse(BaseModel):
     status: UserStatus
     roles: list[str]
     permissions: list[str]
+    address_ids: list[UUID] = Field(default_factory=list)
 
 
 class ValidateSessionRequest(BaseModel):

@@ -63,6 +63,13 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)) -> MessageRes
     if db.query(User).filter((User.login == data.login) | (User.email == data.email)).first():
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Login or email already exists")
 
+    address_ids = list(dict.fromkeys(data.address_ids))
+    addresses = []
+    if address_ids:
+        addresses = db.query(Address).filter(Address.id.in_(address_ids)).all()
+        if len(addresses) != len(address_ids):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
+
     minimal_role = db.query(Role).filter(Role.name == RoleName.MINIMAL).one()
     resident_role = db.query(Role).filter(Role.name == RoleName.RESIDENT).one()
     user = User(
@@ -72,6 +79,7 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)) -> MessageRes
         password_hash=hash_password(data.password),
         status=UserStatus.ACTIVE,
         roles=[minimal_role, resident_role],
+        addresses=addresses,
     )
     db.add(user)
     db.commit()
@@ -88,6 +96,7 @@ def list_users(
         db.query(User)
         .options(joinedload(User.roles).joinedload(Role.permissions))
         .options(joinedload(User.permissions).joinedload(UserPermission.permission))
+        .options(joinedload(User.addresses))
         .order_by(User.login)
         .all()
     )
@@ -100,6 +109,7 @@ def list_users(
             status=user.status,
             roles=collect_user_roles(user),
             permissions=collect_user_permissions(db, user),
+            address_ids=[address.id for address in user.addresses],
         )
         for user in users
     ]
