@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from shared.database import SessionLocal
-from shared.enums import RoleName
+from shared.enums import RoleName, UserStatus
 from shared.models import Address, News, Role, User
 from shared.permissions import ensure_roles_and_permissions
 from shared.security import hash_password
@@ -23,6 +23,10 @@ def main() -> None:
         def upsert_user(login: str, email: str, full_name: str, password: str, roles: list[Role]) -> User:
             user = db.query(User).filter(User.login == login).first()
             if user:
+                user.email = email
+                user.full_name = full_name
+                user.password_hash = hash_password(password)
+                user.status = UserStatus.ACTIVE
                 user.roles = roles
                 return user
             user = User(
