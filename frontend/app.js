@@ -1,12 +1,21 @@
 const API_HOST = window.location.hostname || "localhost";
 const API_PROTOCOL = window.location.protocol === "https:" ? "https:" : "http:";
-const API = {
-  auth: `${API_PROTOCOL}//${API_HOST}:8001`,
-  session: `${API_PROTOCOL}//${API_HOST}:8002`,
-  tickets: `${API_PROTOCOL}//${API_HOST}:8003`,
-  news: `${API_PROTOCOL}//${API_HOST}:8004`,
-  notifications: `${API_PROTOCOL}//${API_HOST}:8005`,
-};
+const IS_LOCAL_API_HOST = ["localhost", "127.0.0.1", ""].includes(API_HOST);
+const API = IS_LOCAL_API_HOST
+  ? {
+    auth: `${API_PROTOCOL}//${API_HOST}:8001`,
+    session: `${API_PROTOCOL}//${API_HOST}:8002`,
+    tickets: `${API_PROTOCOL}//${API_HOST}:8003`,
+    news: `${API_PROTOCOL}//${API_HOST}:8004`,
+    notifications: `${API_PROTOCOL}//${API_HOST}:8005`,
+  }
+  : {
+    auth: "/api/auth",
+    session: "/api/session",
+    tickets: "/api/tickets",
+    news: "/api/news",
+    notifications: "/api/notifications",
+  };
 
 const STORAGE_KEY = "zheu.auth";
 const BROWSER_NOTIFICATION_SETTING_KEY = "zheu.browserNotifications";
