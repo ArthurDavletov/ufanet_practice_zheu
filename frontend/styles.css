@@ -325,6 +325,14 @@ label > textarea {
   align-items: end;
 }
 
+.rating-result {
+  width: fit-content;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #e4f5ea;
+  color: var(--success);
+}
+
 .user-actions {
   display: grid;
   grid-template-columns: minmax(150px, 220px) auto;

@@ -550,7 +550,13 @@ function renderAdmin() {
 
 function renderMyTicket(ticket) {
   const rating = ticket.status === "DONE"
-    ? `
+    ? ticket.rating_value
+      ? `
+      <div class="rating-result">
+        Оценка: <strong>${ticket.rating_value}</strong> из 5
+      </div>
+    `
+      : `
       <form class="rate-form" data-ticket-id="${ticket.id}">
         <label>
           Оценка
