@@ -1,9 +1,11 @@
+const API_HOST = window.location.hostname || "localhost";
+const API_PROTOCOL = window.location.protocol === "https:" ? "https:" : "http:";
 const API = {
-  auth: "http://localhost:8001",
-  session: "http://localhost:8002",
-  tickets: "http://localhost:8003",
-  news: "http://localhost:8004",
-  notifications: "http://localhost:8005",
+  auth: `${API_PROTOCOL}//${API_HOST}:8001`,
+  session: `${API_PROTOCOL}//${API_HOST}:8002`,
+  tickets: `${API_PROTOCOL}//${API_HOST}:8003`,
+  news: `${API_PROTOCOL}//${API_HOST}:8004`,
+  notifications: `${API_PROTOCOL}//${API_HOST}:8005`,
 };
 
 const STORAGE_KEY = "zheu.auth";
@@ -55,6 +57,8 @@ const state = {
   notificationPollId: null,
   users: [],
 };
+
+let refreshPromise = null;
 
 const els = {
   authView: document.querySelector("#authView"),
@@ -344,6 +348,10 @@ async function refreshData() {
 }
 
 async function request(service, path, options = {}) {
+  return requestOnce(service, path, options, true);
+}
+
+async function requestOnce(service, path, options = {}, allowRefresh = true) {
   const headers = new Headers(options.headers || {});
   const init = {
     method: options.method || "GET",
@@ -370,10 +378,49 @@ async function request(service, path, options = {}) {
   }
 
   if (!response.ok) {
+    if (response.status === 401 && options.auth && allowRefresh && (await refreshTokens())) {
+      return requestOnce(service, path, options, false);
+    }
     throw new Error(formatApiError(payload, response.status));
   }
 
   return payload;
+}
+
+async function refreshTokens() {
+  if (!state.tokens?.refresh_token) return false;
+
+  refreshPromise ||= refreshTokensOnce().finally(() => {
+    refreshPromise = null;
+  });
+  return refreshPromise;
+}
+
+async function refreshTokensOnce() {
+  const refreshToken = state.tokens?.refresh_token;
+  if (!refreshToken) return false;
+
+  try {
+    const tokens = await requestOnce(
+      "auth",
+      "/refresh",
+      {
+        method: "POST",
+        body: { refresh_token: refreshToken },
+      },
+      false,
+    );
+    state.tokens = tokens;
+    saveTokens(tokens);
+    state.context = await validateSession();
+    return true;
+  } catch {
+    clearTokens();
+    state.context = null;
+    resetNotificationTracking();
+    stopNotificationPolling();
+    return false;
+  }
 }
 
 async function loadAddresses() {
@@ -682,10 +729,7 @@ function processFetchedNotifications(items) {
     return;
   }
 
-  freshItems
-    .filter((item) => !item.is_read)
-    .reverse()
-    .forEach(showBrowserNotification);
+  freshItems.reverse().forEach(showBrowserNotification);
 }
 
 function showBrowserNotification(notification) {
